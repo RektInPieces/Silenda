@@ -1,7 +1,8 @@
 import React from "react";
 import Button from "../components/Button";
+import { withRouter, RouteComponentProps } from "react-router";
 
-export default function Home() {
+function Home({ history }: RouteComponentProps<{}>) {
   return (
     <>
       <header>
@@ -9,8 +10,11 @@ export default function Home() {
         <p>A card game builder</p>
       </header>
       <p>
-        <Button>Build a Game</Button> <Button>Play a Game</Button>
+        <button onClick={() => history.push("/build")}>Build a Game</button>{" "}
+        <Button>Play a Game</Button>
       </p>
     </>
   );
 }
+
+export default withRouter(Home);

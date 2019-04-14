@@ -13,6 +13,8 @@ pub struct GameRules {
 pub struct Card {
   pub name: &str,
   pub icon: &str,
+  pub color: &str,
+  pub suit: &str,
   pub value: i32,
   pub action: CardAction
 }
@@ -42,5 +44,7 @@ pub enum Condition {
   CurrentPlayerScore { op: Ordering, value: i32 },
   TargetDoesNotHaveCard { target: Player, card: Card },
   TargetHasCard { target: Player, card: Card },
+  TargetHasColor {target: Player, card: Card},
+  TargetHasSuit {target: Player, card: Card},
   TargetCardValue { op: Ordering, value: i32 }
 }

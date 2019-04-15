@@ -60,11 +60,24 @@ impl State {
     Ok(())
   }
 
-    // Write Target
-  pub fn place_card(&mut self, player: PlayerId, card: usize, to: &Vec<Target>) -> Result<(), &str> {
-      let card_state = 
-  }
+  pub fn place_card(&mut self, player: PlayerId, card_index: usize, target: i64) -> Result<(), &str> {
+    let cards: &mut Vec<CardState> = &mut self.players.get_mut(&player).ok_or("Invalid player id")?
+      .cards;
+    if card_index >= cards.len() {
+      // bad
+      return Err("Invalid card index - out of bounds");
+    }
+    let card = cards.remove(card_index);
 
+    match target {
+      -1 => self.deck.push(card.id),
+      target if target >= 0 => self.players.get_mut(&(target as u16))
+        .ok_or("Invalid target player")?
+        .cards.push(card),
+      _ => return Err("Invalid target specified")
+    }
+    Ok(())
+  }
 }
 
 

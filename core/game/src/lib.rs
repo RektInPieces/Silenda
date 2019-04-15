@@ -23,7 +23,8 @@ quick_error! {
 #[derive(FromPrimitive)]
 enum Moves {
     DrawCard = 1,
-    RevealCard = 2
+    RevealCard = 2,
+    PlaceCard = 3
 }
 
 /// Define your moves as methods in this trait.
@@ -65,14 +66,12 @@ trait Moves {
                 let card_index = args.as_array()
                     .and_then(|arr| arr.get(1))
                     .and_then(|arg0| arg0.as_u64())
-                    .ok_or(Box::new(Errors::InvalidMove))?;
+                    .ok_or(Box::new(Errors::InvalidMove))? as usize;
                 let target = args.as_array() 
                     .and_then(|arr| arr.get(1))
                     .and_then(|arg0| arg0.as_i64())
                     .ok_or(Box::new(Errors::InvalidMove))?;
-                    //HACK
-                    .iter().map(|val| val.as_u64().unwrap_or(0) as u16).collect();
-                state.g.place_card(player_id, card_index, target)
+                state.g.place_card(player_id, card_index, target)?;
             }
             None => return Err(Box::new(Errors::InvalidMove))
         }

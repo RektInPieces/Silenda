@@ -23,20 +23,14 @@ quick_error! {
 /// Define your moves as methods in this trait.
 #[moves]
 trait Moves {
-    fn draw_card(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
+    fn draw_card(state: &mut UserState<State>, _player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
         if let Some(value) = args {
-            let id = value.as_array()
+            let target = value.as_array()
                 .and_then(|arr| arr.get(0))
                 .and_then(|cell| cell.as_u64())
-                .and_then(|cell| Some(cell as usize))
+                .and_then(|cell| Some(cell as u16))
                 .ok_or(Box::new(Errors::InvalidCell))?;
-            match state.g.cells[id] {
-                -1 => {
-                    state.g.cells[id] = state.ctx.current_player as i32;
-                    Ok(())
-                },
-                _ => Err(Box::new(Errors::InvalidCell))
-            }
+            state.g.draw_card(target)?;
         } else {
             return Err(Box::new(Errors::InvalidCell))
         }

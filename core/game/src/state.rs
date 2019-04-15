@@ -18,7 +18,7 @@ impl Default for State {
 }
 
 impl State {
-  fn draw_card(&mut self, player: u16) -> Result<(), &str> {
+  pub fn draw_card(&mut self, player: u16) -> Result<(), &str> {
     let card = self.deck.pop().ok_or("No card exists on the deck")?;
     self.players.get_mut(&player)
       .ok_or("Invalid player id")?

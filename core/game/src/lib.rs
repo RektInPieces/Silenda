@@ -1,3 +1,6 @@
+mod rules;
+mod state;
+
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
@@ -8,11 +11,13 @@ extern crate quick_error;
 extern crate oasis_game_core;
 #[macro_use]
 extern crate oasis_game_core_derive;
+extern crate rhai;
 
 use serde_json::Value;
 use std::error::Error;
 use oasis_game_core::{*, Game as InnerGame};
 use oasis_game_core_derive::{flow, moves};
+use rhai::Engine;
 
 /// Error types.
 quick_error! {
@@ -25,55 +30,24 @@ quick_error! {
     }
 }
 
-/// Define the state shape.
-/// State type.
-pub type Cells = [i32; 9];
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct State {
-    pub cells: Cells
-}
-impl Default for State {
-    fn default() -> Self {
-        State {
-            cells: [-1; 9]
-        }
-    }
-}
-
-fn is_victory (cells: Cells) -> Option<[usize; 3]> {
-    let positions: [[usize; 3]; 8] = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ];
-    for (_, pos) in positions.iter().enumerate() {
-        let symbol = cells[pos[0]];
-        if symbol == -1 {
-            continue;
-        }
-        let mut won = Some(*pos);
-        for (_, i) in pos.iter().enumerate() {
-            if cells[*i] != symbol {
-                won = None;
-                break;
-            }
-        }
-        if won.is_some() {
-            return won;
-        }
-    }
-    None
-}
-
 /// Define your moves as methods in this trait.
 #[moves]
 trait Moves {
-    fn click_cell(state: &mut UserState<State>, player_id: u16, args: &Option<Value>)
+    fn draw_card(state: &mut UserState<state::GameState>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
+        
+    }
+
+    fn place_card(state: &mut UserState<state::GameState>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
+    
+    }
+
+    fn reveal_card(state: &mut UserState<state::GameState>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
+
+    }
+
+
+    
+    fn click_cell(state: &mut UserState<state::GameState>, player_id: u16, args: &Option<Value>)
                 -> Result<(), Box<Error>> {
         if let Some(value) = args {
             let id = value.as_array()
@@ -122,13 +96,5 @@ trait Flow {
             })));
         }
         None
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
     }
 }

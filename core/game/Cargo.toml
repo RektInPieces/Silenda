@@ -2,6 +2,7 @@
 name = "core"
 version = "0.1.0"
 authors = ["Andrew Osheroff <andrewosh@gmail.com>"]
+edition = "2018"
 
 [dependencies]
 quick-error = "1.2.2"
@@ -11,6 +12,7 @@ serde_derive = "1.0.70"
 lazy_static = "1.1.0"
 oasis-game-core = "0.9.0"
 oasis-game-core-derive = "0.9.0"
+rhai = { git = "https://github.com/scintillating/rhai" }
 
 [dependencies.rand]
 version = "0.6.4"
@@ -18,3 +20,5 @@ features = ["wasm-bindgen"]
 
 [lib]
 crate-type = ["lib"]
+
+

@@ -13,6 +13,8 @@ lazy_static = "1.1.0"
 oasis-game-core = "0.9.0"
 oasis-game-core-derive = "0.9.0"
 rhai = { git = "https://github.com/scintillating/rhai" }
+num-traits = "0.2"
+num-derive = "0.2"
 
 [dependencies.rand]
 version = "0.6.4"

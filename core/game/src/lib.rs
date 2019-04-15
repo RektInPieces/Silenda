@@ -6,16 +6,24 @@ use std::error::Error;
 use oasis_game_core::*;
 use oasis_game_core_derive::{flow, moves};
 use serde_json::value::Value;
+use num_derive::FromPrimitive;    
+use num_traits::FromPrimitive;
 use state::State;
 
 quick_error! {
     #[derive(Debug)]
     pub enum Errors {
-        InvalidCell {
-            description("invalid cell")
-            display("A move must specify a valid cell.")
+        InvalidMove {
+            description("invalid move specified")
+            display("invalid move specified")
         }
     }
+}
+
+#[derive(FromPrimitive)]
+enum Moves {
+    DrawCard = 1,
+    RevealCard = 2
 }
 
 
@@ -23,27 +31,42 @@ quick_error! {
 /// Define your moves as methods in this trait.
 #[moves]
 trait Moves {
-    fn draw_card(state: &mut UserState<State>, _player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
-        if let Some(value) = args {
-            let target = value.as_array()
-                .and_then(|arr| arr.get(0))
-                .and_then(|cell| cell.as_u64())
-                .and_then(|cell| Some(cell as u16))
-                .ok_or(Box::new(Errors::InvalidCell))?;
-            state.g.draw_card(target)?;
-        } else {
-            return Err(Box::new(Errors::InvalidCell))
+    // Seems like the move macro only allows one move function to be specified.
+    // In this case, we simply use the first argument given to the function
+    // to disambiguate which method to call.
+    // This also can't be called "make_move" because the macro defines its own
+    // function called make_move
+    fn do_move(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
+        let args = args.as_ref().ok_or(Box::new(Errors::InvalidMove))?;
+        let move_id = args.as_array()
+            .and_then(|arr| arr.get(0))
+            .and_then(|arg0| arg0.as_u64())
+            .ok_or(Box::new(Errors::InvalidMove))?;
+        match FromPrimitive::from_u64(move_id) {
+            Some(Moves::DrawCard) => {
+                let target = args.as_array()
+                    .and_then(|arr| arr.get(1))
+                    .and_then(|arg0| arg0.as_u64())
+                    .ok_or(Box::new(Errors::InvalidMove))?;
+                state.g.draw_card(target as u16)?;
+            }
+            Some(Moves::RevealCard) => {
+                let card_index = args.as_array()
+                    .and_then(|arr| arr.get(1))
+                    .and_then(|arg0| arg0.as_u64())
+                    .ok_or(Box::new(Errors::InvalidMove))? as usize;
+                let visible_to = args.as_array()
+                    .and_then(|arr| arr.get(2))
+                    .and_then(|arg0| arg0.as_array())
+                    .ok_or(Box::new(Errors::InvalidMove))?
+                    // HACK
+                    .iter().map(|val| val.as_u64().unwrap_or(0) as u16).collect();
+                state.g.reveal_card(player_id, card_index, &visible_to)?;
+            }
+            None => return Err(Box::new(Errors::InvalidMove))
         }
         Ok(())
     }
-
-    // fn place_card(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
-    
-    // }
-
-    // fn reveal_card(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
-
-    // }
     
     // fn click_cell(state: &mut UserState<State>, player_id: u16, args: &Option<Value>)
     //             -> Result<(), Box<Error>> {

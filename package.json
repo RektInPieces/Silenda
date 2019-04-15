@@ -9,15 +9,22 @@
     "@types/react-dom": "16.8.3",
     "@types/react-router": "^4.4.5",
     "@types/react-router-dom": "^4.3.2",
+    "bindings": "^1.5.0",
+    "chalk": "^2.4.2",
+    "codecs": "^2.0.0",
+    "inherits": "^2.0.3",
     "oasis-game-client": "^0.9.6",
+    "ora": "^3.4.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
+    "sodium-universal": "^2.0.0",
     "typescript": "3.4.2",
     "web3": "^1.0.0-beta.52",
-    "web3c": "^2.0.5"
+    "web3c": "^2.0.5",
+    "yargs": "^13.2.2"
   },
   "scripts": {
     "start": "react-scripts start",

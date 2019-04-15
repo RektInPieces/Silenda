@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 use serde_derive::{Serialize, Deserialize};
-use crate::rules::Card;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct State {
   // Address -> PlayerState
   pub players: HashMap<u16, PlayerState>,
-  pub deck: Vec<Card>
+  pub deck: Vec<usize>
 }
 
 impl Default for State {
@@ -19,8 +18,12 @@ impl Default for State {
 }
 
 impl State {
-  fn draw_card(&mut self, _player: u16) {
-    
+  fn draw_card(&mut self, player: u16) -> Result<(), &str> {
+    let card = self.deck.pop().ok_or("No card exists on the deck")?;
+    self.players.get_mut(&player)
+      .ok_or("Invalid player id")?
+      .cards.push(card);
+    Ok(())
   }
 }
 

@@ -5,6 +5,7 @@ use quick_error::quick_error;
 use std::error::Error;
 use oasis_game_core::*;
 use oasis_game_core_derive::{flow, moves};
+use serde_json::value::Value;
 use state::State;
 
 quick_error! {
@@ -17,12 +18,30 @@ quick_error! {
     }
 }
 
+
+
 /// Define your moves as methods in this trait.
 #[moves]
 trait Moves {
-    // fn draw_card(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
-        
-    // }
+    fn draw_card(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
+        if let Some(value) = args {
+            let id = value.as_array()
+                .and_then(|arr| arr.get(0))
+                .and_then(|cell| cell.as_u64())
+                .and_then(|cell| Some(cell as usize))
+                .ok_or(Box::new(Errors::InvalidCell))?;
+            match state.g.cells[id] {
+                -1 => {
+                    state.g.cells[id] = state.ctx.current_player as i32;
+                    Ok(())
+                },
+                _ => Err(Box::new(Errors::InvalidCell))
+            }
+        } else {
+            return Err(Box::new(Errors::InvalidCell))
+        }
+        Ok(())
+    }
 
     // fn place_card(state: &mut UserState<State>, player_id: u16, args: &Option<Value>) -> Result<(), Box<Error>> {
     

@@ -60,3 +60,21 @@ impl State {
     Ok(())
   }
 }
+
+#[cfg(test)]
+use std::error::Error;
+
+#[test]
+fn drawing_card() -> Result<(), Box<Error>> {
+  let mut state = State::default();
+  const CARD_ID: usize = 0;
+  const PLAYER_ID: u16 = 0;
+
+  state.deck.push(CARD_ID);
+  state.players.insert(PLAYER_ID, PlayerState { cards: vec![], score: 0 });
+  state.draw_card(PLAYER_ID)?;
+  assert_eq!(state.players[&PLAYER_ID].cards.len(), 1);
+  assert_eq!(state.players[&PLAYER_ID].cards[0].id, CARD_ID);
+
+  Ok(())
+}

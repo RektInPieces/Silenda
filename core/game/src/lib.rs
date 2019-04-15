@@ -26,8 +26,6 @@ enum Moves {
     RevealCard = 2
 }
 
-
-
 /// Define your moves as methods in this trait.
 #[moves]
 trait Moves {

@@ -59,7 +59,14 @@ impl State {
     }
     Ok(())
   }
+
+    // Write Target
+  pub fn place_card(&mut self, player: PlayerId, card: usize, to: &Vec<Target>) -> Result<(), &str> {
+      let card_state = 
+  }
+
 }
+
 
 #[cfg(test)]
 use std::error::Error;

@@ -61,6 +61,19 @@ trait Moves {
                     .iter().map(|val| val.as_u64().unwrap_or(0) as u16).collect();
                 state.g.reveal_card(player_id, card_index, &visible_to)?;
             }
+            Some(Moves::PlaceCard) => {
+                let card_index = args.as_array()
+                    .and_then(|arr| arr.get(1))
+                    .and_then(|arg0| arg0.as_u64())
+                    .ok_or(Box::new(Errors::InvalidMove))?;
+                let target = args.as_array() 
+                    .and_then(|arr| arr.get(1))
+                    .and_then(|arg0| arg0.as_i64())
+                    .ok_or(Box::new(Errors::InvalidMove))?;
+                    //HACK
+                    .iter().map(|val| val.as_u64().unwrap_or(0) as u16).collect();
+                state.g.place_card(player_id, card_index, target)
+            }
             None => return Err(Box::new(Errors::InvalidMove))
         }
         Ok(())
